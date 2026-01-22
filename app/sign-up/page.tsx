@@ -11,7 +11,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { signUp } from "@/lib/auth/auth-client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import { useState } from "react";
 
 export default function SignUp() {
@@ -22,7 +25,32 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {};
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const result = await signUp.email({
+        name,
+        email,
+        password,
+      });
+
+      if (result.error) {
+        setError(result.error.message ?? "Failed to sign up");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-white p-4">

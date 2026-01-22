@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { signIn } from "@/lib/auth/auth-client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignIn() {
@@ -21,7 +23,31 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {};
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const result = await signIn.email({
+        email,
+        password,
+      });
+
+      if (result.error) {
+        setError(result.error.message ?? "Failed to sign up");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-white p-4">
@@ -76,7 +102,7 @@ export default function SignIn() {
               className="w-full bg-primary hover:bg-primary/90"
               disabled={loading}
             >
-              {loading ? "Creating account..." : "Sign Up"}
+              {loading ? "Creating account..." : "Sign In"}
             </Button>
             <p className="text-center text-sm text-gray-600">
               Don&apos;t have an account?{" "}
