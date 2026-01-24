@@ -1,6 +1,7 @@
 "use client";
 
 import CreateJobApplicationDialog from "@/components/create-job-dialog";
+import JobApplicationCard from "@/components/job-application-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -9,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Board, Column } from "@/lib/models/model.types";
+import { Board, Column, JobApplication } from "@/lib/models/model.types";
 import {
   Award,
   Calendar,
@@ -57,11 +58,16 @@ const DroppableColumn = ({
   column,
   config,
   boardId,
+  sortedColumns,
 }: {
   column: Column;
   config: ColConfig;
   boardId: string;
+  sortedColumns: Column[];
 }) => {
+  const sortedJobs =
+    column.jobApplications.sort((a, b) => a.order - b.order) || [];
+
   return (
     <Card className="min-w-[300px] flex-shrink-0 shadow-md p-0">
       <CardHeader
@@ -91,14 +97,37 @@ const DroppableColumn = ({
         </div>
       </CardHeader>
       <CardContent className="space-y-2 bg-gray-50/50 min-h-[400px] rounded-b-lg">
+        {sortedJobs.map((job, key) => (
+          <SortableJobCard
+            key={key}
+            job={{ ...job, columnId: job.columnId || column._id }}
+            columns={sortedColumns}
+          />
+        ))}
         <CreateJobApplicationDialog columnId={column._id} boardId={boardId} />
       </CardContent>
     </Card>
   );
 };
 
+const SortableJobCard = ({
+  job,
+  columns,
+}: {
+  job: JobApplication;
+  columns: Column[];
+}) => {
+  return (
+    <div>
+      <JobApplicationCard job={job} columns={columns} />
+    </div>
+  );
+};
+
 const KanbanBoard = ({ board, userId }: Props) => {
   const columns = board.columns;
+
+  const sortedColumns = columns.sort((a, b) => a.order - b.order) || [];
 
   return (
     <div>
@@ -114,6 +143,7 @@ const KanbanBoard = ({ board, userId }: Props) => {
               column={col}
               config={config}
               boardId={board._id}
+              sortedColumns={sortedColumns}
             />
           );
         })}
