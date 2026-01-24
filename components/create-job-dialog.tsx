@@ -1,0 +1,89 @@
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Plus } from "lucide-react";
+
+type CreateJobApplicationDialogProps = {
+  columnId: string;
+  boardId: string;
+};
+
+const CreateJobApplicationDialog = ({
+  columnId,
+  boardId,
+}: CreateJobApplicationDialogProps) => {
+  return (
+    <Dialog>
+      <DialogTrigger>
+        <Button
+          variant="outline"
+          className="w-full mb-4 justify-start text-muted-foreground border-dashed hover:border-solid hover:bg-muted/50"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Add Job
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Add Job Application</DialogTitle>
+          <DialogDescription>Track a new job application</DialogDescription>
+        </DialogHeader>
+        <form className="space-y-4" action="">
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="company">Company*</Label>
+                <Input id="company" required></Input>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="position">Position*</Label>
+                <Input id="position" required></Input>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input id="location"></Input>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="salary">Salary</Label>
+                <Input id="salary" placeholder="e.g., $100k - $150k"></Input>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="jobUrl">Job URL</Label>
+              <Input id="jobUrl" type="url" placeholder="https://..." />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="tags">Tags (comma-separated)</Label>
+              <Input id="tags" placeholder="React, Tailwind, High Pay" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                rows={3}
+                placeholder="Brief description of the role..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea id="notes" rows={4} />
+            </div>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default CreateJobApplicationDialog;
