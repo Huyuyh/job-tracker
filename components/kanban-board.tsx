@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import useBoards from "@/lib/hooks/useBoards";
 import { Board, Column, JobApplication } from "@/lib/models/model.types";
 import {
   Award,
@@ -125,7 +126,7 @@ const SortableJobCard = ({
 };
 
 const KanbanBoard = ({ board, userId }: Props) => {
-  const columns = board.columns;
+  const { columns, moveJob } = useBoards(board);
 
   const sortedColumns = columns.sort((a, b) => a.order - b.order) || [];
 
