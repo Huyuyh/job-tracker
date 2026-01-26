@@ -24,16 +24,20 @@ import {
   updateJobApplication,
 } from "@/lib/actions/job-applications";
 import { Column, JobApplication } from "@/lib/models/model.types";
+import clsx from "clsx";
 import { Edit2, ExternalLink, MoreVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
   job: JobApplication;
   columns: Column[];
+  dragHandleProps?: React.HTMLAttributes<HTMLElement>;
 };
 
-const JobApplicationCard = ({ job, columns }: Props) => {
+const JobApplicationCard = ({ job, columns, dragHandleProps }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isOpenDetail, setIsOpenDetail] = useState(false);
+
   const [formData, setFormData] = useState({
     company: job.company,
     position: job.position,
@@ -45,6 +49,24 @@ const JobApplicationCard = ({ job, columns }: Props) => {
     tags: job.tags?.join(", ") || "",
     description: job.description || "",
   });
+
+  const handleOpenDetail = () => {
+    setIsOpenDetail(true);
+    setIsEditing(false);
+  };
+
+  const handleCloseDetail = () => {
+    setIsOpenDetail(false);
+  };
+
+  const handleOpenEdit = () => {
+    setIsEditing(true);
+    setIsOpenDetail(false);
+  };
+
+  const handleCloseEdit = () => {
+    setIsEditing(false);
+  };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +112,11 @@ const JobApplicationCard = ({ job, columns }: Props) => {
 
   return (
     <>
-      <Card className="cursor-pointer transition-shadow hover:shadow-lg bg-white group shadow-sm">
+      <Card
+        className="cursor-pointer transition-shadow hover:shadow-lg bg-white group shadow-sm"
+        {...dragHandleProps}
+        onClick={handleOpenDetail}
+      >
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
@@ -135,7 +161,10 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                  <DropdownMenuItem
+                    onSelect={handleOpenEdit}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <Edit2 className="mr-2 h-4 w-4" />
                     Edit
                   </DropdownMenuItem>
@@ -167,7 +196,13 @@ const JobApplicationCard = ({ job, columns }: Props) => {
         </CardContent>
       </Card>
 
-      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+      <Dialog
+        open={isEditing || isOpenDetail}
+        onOpenChange={() => {
+          handleCloseDetail();
+          handleCloseEdit();
+        }}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Add Job Application</DialogTitle>
@@ -181,6 +216,11 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                   <Input
                     id="company"
                     required
+                    disabled={isOpenDetail || !isEditing}
+                    className={clsx(
+                      "",
+                      `${isOpenDetail && "disabled:opacity-100 disabled:bg-gray-100 disabled:text-black disabled:cursor-not-allowed"}`,
+                    )}
                     value={formData.company}
                     onChange={(e) =>
                       setFormData({
@@ -188,13 +228,18 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                         company: e.target.value,
                       })
                     }
-                  ></Input>
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="position">Position*</Label>
                   <Input
                     id="position"
                     required
+                    disabled={isOpenDetail || !isEditing}
+                    className={clsx(
+                      "",
+                      `${isOpenDetail && "disabled:opacity-100 disabled:bg-gray-100 disabled:text-black disabled:cursor-not-allowed"}`,
+                    )}
                     value={formData.position}
                     onChange={(e) =>
                       setFormData({
@@ -202,7 +247,7 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                         position: e.target.value,
                       })
                     }
-                  ></Input>
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -211,19 +256,29 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                   <Input
                     id="location"
                     value={formData.location}
+                    disabled={isOpenDetail || !isEditing}
+                    className={clsx(
+                      "",
+                      `${isOpenDetail && "disabled:opacity-100 disabled:bg-gray-100 disabled:text-black disabled:cursor-not-allowed"}`,
+                    )}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
                         location: e.target.value,
                       })
                     }
-                  ></Input>
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="salary">Salary</Label>
                   <Input
                     id="salary"
                     placeholder="e.g., $100k - $150k"
+                    disabled={isOpenDetail || !isEditing}
+                    className={clsx(
+                      "",
+                      `${isOpenDetail && "disabled:opacity-100 disabled:bg-gray-100 disabled:text-black disabled:cursor-not-allowed"}`,
+                    )}
                     value={formData.salary}
                     onChange={(e) =>
                       setFormData({
@@ -231,7 +286,7 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                         salary: e.target.value,
                       })
                     }
-                  ></Input>
+                  />
                 </div>
               </div>
               <div className="space-y-2">
@@ -240,6 +295,11 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                   id="jobUrl"
                   type="url"
                   placeholder="https://..."
+                  disabled={isOpenDetail || !isEditing}
+                  className={clsx(
+                    "",
+                    `${isOpenDetail && "disabled:opacity-100 disabled:bg-gray-100 disabled:text-black disabled:cursor-not-allowed"}`,
+                  )}
                   value={formData.jobUrl}
                   onChange={(e) =>
                     setFormData({
@@ -254,6 +314,11 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                 <Input
                   id="tags"
                   placeholder="React, Tailwind, High Pay"
+                  disabled={isOpenDetail || !isEditing}
+                  className={clsx(
+                    "",
+                    `${isOpenDetail && "disabled:opacity-100 disabled:bg-gray-100 disabled:text-black disabled:cursor-not-allowed"}`,
+                  )}
                   value={formData.tags}
                   onChange={(e) =>
                     setFormData({
@@ -269,6 +334,11 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                   id="description"
                   rows={3}
                   placeholder="Brief description of the role..."
+                  disabled={isOpenDetail || !isEditing}
+                  className={clsx(
+                    "",
+                    `${isOpenDetail && "disabled:opacity-100 disabled:bg-gray-100 disabled:text-black disabled:cursor-not-allowed"}`,
+                  )}
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({
@@ -283,6 +353,11 @@ const JobApplicationCard = ({ job, columns }: Props) => {
                 <Textarea
                   id="notes"
                   rows={4}
+                  disabled={isOpenDetail || !isEditing}
+                  className={clsx(
+                    "",
+                    `${isOpenDetail && "disabled:opacity-100 disabled:bg-gray-100 disabled:text-black disabled:cursor-not-allowed"}`,
+                  )}
                   value={formData.notes}
                   onChange={(e) =>
                     setFormData({
@@ -294,14 +369,33 @@ const JobApplicationCard = ({ job, columns }: Props) => {
               </div>
             </div>
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsEditing(false)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit">Save change</Button>
+              {isOpenDetail && (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCloseDetail}
+                  >
+                    Close
+                  </Button>
+                  <Button type="button" onClick={handleOpenEdit}>
+                    Edit
+                  </Button>
+                </>
+              )}
+
+              {isEditing && (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCloseEdit}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save change</Button>
+                </>
+              )}
             </DialogFooter>
           </form>
         </DialogContent>
