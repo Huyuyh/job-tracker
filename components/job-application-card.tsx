@@ -66,6 +66,17 @@ const JobApplicationCard = ({ job, columns, dragHandleProps }: Props) => {
 
   const handleCloseEdit = () => {
     setIsEditing(false);
+    setFormData({
+      company: job.company,
+      position: job.position,
+      location: job.location || "",
+      notes: job.notes || "",
+      salary: job.salary || "",
+      jobUrl: job.jobUrl || "",
+      columnId: job.columnId || "",
+      tags: job.tags?.join(", ") || "",
+      description: job.description || "",
+    });
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
