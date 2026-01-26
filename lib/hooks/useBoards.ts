@@ -1,10 +1,17 @@
 import { Board, Column } from "@/lib/models/model.types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const useBoards = (initialBoard?: Board | null) => {
   const [board, setBoard] = useState<Board | null>(initialBoard || null);
   const [columns, setColumns] = useState<Column[]>(initialBoard?.columns || []);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialBoard) {
+      setBoard(initialBoard);
+      setColumns(initialBoard.columns || []);
+    }
+  }, [initialBoard]);
 
   const moveJob = async (
     jobApplicationId: string,
