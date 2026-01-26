@@ -35,7 +35,7 @@ const DashboardPage = async () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
       <div className="container mx-auto p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-black">Job Hunt</h1>
